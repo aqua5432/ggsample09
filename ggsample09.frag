@@ -19,13 +19,14 @@ in vec2 tc;                                         // 補間されたテクス�
 // テクスチャ座標のサンプラ
 uniform sampler2D color;                            // カラーマップ
 uniform sampler2D normal;                           // 法線マップ
-
 // フレームバッファに出力するデータ
 out vec4 fc;                                        // フラグメントの色
 
 void main(void)
 {
-  vec3 nn = vec3(0.0, 0.0, 1.0);                    // 接空間における法線ベクトル
+  //vec3 nn = vec3(0.0, 0.0, 1.0);                    // 接空間における法線ベクトル
+  //vec3 nn = normalize(texture(normal, tc).xyz * 2.0 -1.0);
+  vec3 nn = texture(normal, tc).xyz * 2.0 - 1.0;
   vec3 nl = normalize(l);                           // 接空間における光線ベクトル
   vec3 nh = normalize(h);                           // 接空間における中間ベクトル
 
@@ -33,5 +34,6 @@ void main(void)
   vec4 idiff = max(dot(nn, nl), 0.0) * kdiff * ldiff;
   vec4 ispec = pow(max(dot(nn, nh), 0.0), kshi) * kspec * lspec;
 
-  fc = texture(color, tc) * (iamb + idiff) + step(texture(normal, tc).w, 0.0) * ispec;
+  //fc = texture(color, tc) * (iamb + idiff) + mix(1.0, 0.0, step(0.0, texture(color, tc).w)) * ispec;
+  fc = texture(color, tc) * (iamb + idiff) + step(texture(color, tc).w, 0.0) * ispec;
 }
